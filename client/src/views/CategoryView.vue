@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
+import { API_BASE_URL } from '../config/api'
 import ProductCard from '../components/ProductCard.vue'
 
 const route = useRoute()
@@ -30,7 +31,7 @@ const categoryInfo = {
 const fetchProducts = async () => {
   loading.value = true
   try {
-    const res = await axios.get('http://localhost:5000/api/products')
+    const res = await axios.get(`${API_BASE_URL}/products`)
     const subCat = route.params.subCategory
     categoryName.value = subCat
     
@@ -38,6 +39,7 @@ const fetchProducts = async () => {
     products.value = res.data.filter(p => 
       p.subCategory && p.subCategory.toLowerCase() === subCat.toLowerCase()
     )
+    console.log(`Loaded ${products.value.length} products for category: ${subCat}`)
   } catch (err) {
     console.error(err)
   } finally {

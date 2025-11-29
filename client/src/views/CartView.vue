@@ -2,6 +2,14 @@
 import { useCartStore } from '../stores/cart'
 
 const cart = useCartStore()
+
+const checkout = () => {
+  if (confirm('Proceed to payment? This is a demo, so no real payment will be processed.')) {
+    cart.clearCart()
+    alert('Order placed successfully! Thank you for shopping with us.')
+  }
+}
+
 </script>
 
 <template>
@@ -48,7 +56,7 @@ const cart = useCartStore()
           <span>Total Price:</span>
           <span>₹{{ cart.totalPrice }}</span>
         </div>
-        <button class="btn btn-primary checkout-btn">Proceed to Checkout</button>
+        <button @click="checkout" class="btn btn-primary checkout-btn">Proceed to Checkout</button>
       </div>
     </div>
   </div>

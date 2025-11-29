@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
+import { API_BASE_URL } from '../config/api'
 import ProductCard from '../components/ProductCard.vue'
 
 const props = defineProps({
@@ -16,7 +17,7 @@ const loading = ref(true)
 const fetchProducts = async () => {
   loading.value = true
   try {
-    const res = await axios.get('http://localhost:5000/api/products')
+    const res = await axios.get(`${API_BASE_URL}/products`)
     // Filter by category
     products.value = res.data.filter(p => p.category === props.category)
   } catch (err) {

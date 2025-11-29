@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { API_BASE_URL } from '../config/api'
 
 const products = ref([])
 const users = ref([])
@@ -20,7 +21,7 @@ const form = ref({
 
 const fetchProducts = async () => {
   try {
-    const res = await axios.get('http://localhost:5000/api/products')
+    const res = await axios.get(`${API_BASE_URL}/products`)
     products.value = res.data
   } catch (err) {
     console.error(err)
@@ -29,7 +30,7 @@ const fetchProducts = async () => {
 
 const fetchUsers = async () => {
   try {
-    const res = await axios.get('http://localhost:5000/api/admin/users')
+    const res = await axios.get(`${API_BASE_URL}/admin/users`)
     users.value = res.data
   } catch (err) {
     console.error(err)
@@ -38,7 +39,7 @@ const fetchUsers = async () => {
 
 const fetchUserStats = async () => {
   try {
-    const res = await axios.get('http://localhost:5000/api/admin/user-stats')
+    const res = await axios.get(`${API_BASE_URL}/admin/user-stats`)
     userStats.value = res.data
   } catch (err) {
     console.error(err)
@@ -49,7 +50,7 @@ const fetchUserStats = async () => {
 
 const handleSubmit = async () => {
   try {
-    await axios.post('http://localhost:5000/api/products', form.value)
+    await axios.post(`${API_BASE_URL}/products`, form.value)
     await fetchProducts()
     showForm.value = false
     form.value = {
@@ -69,7 +70,7 @@ const handleSubmit = async () => {
 const deleteProduct = async (id) => {
   if (!confirm('Are you sure?')) return
   try {
-    await axios.delete(`http://localhost:5000/api/products/${id}`)
+    await axios.delete(`${API_BASE_URL}/products/${id}`)
     await fetchProducts()
   } catch (err) {
     console.error(err)
