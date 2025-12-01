@@ -4,12 +4,31 @@
         {
             "src": "server/index.js",
             "use": "@vercel/node"
+        },
+        {
+            "src": "client/package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "dist"
+            }
         }
     ],
     "routes": [
         {
+            "src": "/api/(.*)",
+            "dest": "server/index.js"
+        },
+        {
+            "src": "/assets/(.*)",
+            "dest": "/assets/$1"
+        },
+        {
+            "src": "/(.*)\\.(png|jpg|jpeg|svg|ico|json|css|js)",
+            "dest": "/$1.$2"
+        },
+        {
             "src": "/(.*)",
-            "dest": "/"
+            "dest": "/index.html"
         }
     ]
 }
