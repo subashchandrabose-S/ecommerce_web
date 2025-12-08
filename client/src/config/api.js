@@ -1,11 +1,13 @@
 // API Configuration
-// In development: uses localhost
-// In production: uses relative URLs (same domain as frontend)
+// Supports: Development (localhost), Vercel (same domain), Render (external URL)
 
 const getApiUrl = () => {
-    // Check if we're in production (Vercel) or development
+    // Check for explicit API URL (for Render or other external deployments)
+    if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL
+    }
+    // In production without explicit URL (Vercel - same domain)
     if (import.meta.env.PROD) {
-        // In production, API runs on the same domain
         return '/api'
     }
     // In development, use localhost backend
@@ -13,3 +15,4 @@ const getApiUrl = () => {
 }
 
 export const API_BASE_URL = getApiUrl()
+
