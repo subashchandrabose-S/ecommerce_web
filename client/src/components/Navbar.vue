@@ -40,6 +40,7 @@ const closeMenu = () => {
         <RouterLink to="/cart">Cart ({{ cart.totalItems }})</RouterLink>
         
         <div v-if="isAuthenticated" class="auth-links">
+          <!-- <RouterLink to="/my-orders">My Orders</RouterLink> -->
           <RouterLink v-if="isAdmin" to="/admin">Admin</RouterLink>
           <button @click="logout" class="btn-text">Logout</button>
         </div>
@@ -58,6 +59,7 @@ const closeMenu = () => {
         <RouterLink to="/cart" @click="closeMenu">Cart ({{ cart.totalItems }})</RouterLink>
         
         <div v-if="isAuthenticated" class="mobile-auth-links">
+          <!-- <RouterLink to="/my-orders" @click="closeMenu">My Orders</RouterLink> -->
           <RouterLink v-if="isAdmin" to="/admin" @click="closeMenu">Admin Dashboard</RouterLink>
           <button @click="logout" class="btn-text">Logout</button>
         </div>
@@ -282,5 +284,13 @@ const closeMenu = () => {
     font-size: 0.9rem;
     padding: 0.75rem 0.875rem;
   }
+}
+</style>
+
+<style scoped>
+.auth-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
 }
 </style>

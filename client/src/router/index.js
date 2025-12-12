@@ -51,6 +51,18 @@ const router = createRouter({
             path: '/cart',
             name: 'cart',
             component: () => import('../views/CartView.vue')
+        },
+        {
+            path: '/my-orders',
+            name: 'my-orders',
+            component: () => import('../views/MyOrdersView.vue'),
+            meta: { requiresAuth: true }
+        },
+        {
+            path: '/payment/:id',
+            name: 'payment',
+            component: () => import('../views/PaymentView.vue'),
+            meta: { requiresAuth: true }
         }
     ]
 })

@@ -1,14 +1,17 @@
-<script setup>
+rnt<script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { API_BASE_URL } from '../config/api'
+import { useAuthStore } from '../stores/auth'
 
 const products = ref([])
 const users = ref([])
+const orders = ref([])
 const userStats = ref([])
 const loading = ref(true)
 const showForm = ref(false)
-const activeTab = ref('products') // 'products', 'users', 'stats'
+const activeTab = ref('orders') // 'products', 'users', 'stats', 'orders'
+const auth = useAuthStore()
 
 const form = ref({
   name: '',
@@ -30,7 +33,7 @@ const fetchProducts = async () => {
 
 const fetchUsers = async () => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/admin/users`)
+    const res = await axios.get(`${API_BASE_URL}/admin/users`, { headers: { 'x-auth-token': auth.token } })
     users.value = res.data
   } catch (err) {
     console.error(err)
@@ -39,12 +42,34 @@ const fetchUsers = async () => {
 
 const fetchUserStats = async () => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/admin/user-stats`)
+    const res = await axios.get(`${API_BASE_URL}/admin/user-stats`, { headers: { 'x-auth-token': auth.token } })
     userStats.value = res.data
   } catch (err) {
     console.error(err)
   } finally {
     loading.value = false
+  }
+}
+
+const fetchOrders = async () => {
+  try {
+    const res = await axios.get(`${API_BASE_URL}/admin/orders`, { headers: { 'x-auth-token': auth.token } })
+    orders.value = res.data
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const updateOrderStatus = async (id, status) => {
+  try {
+    await axios.put(`${API_BASE_URL}/admin/orders/${id}`, { status }, { headers: { 'x-auth-token': auth.token } })
+    // Update local state to reflect change immediately (or re-fetch)
+    const order = orders.value.find(o => o._id === id)
+    if (order) order.status = status
+    // Optional: Show success feedback
+  } catch (err) {
+    console.error(err)
+    alert('Failed to update status')
   }
 }
 
@@ -82,6 +107,7 @@ onMounted(async () => {
   await fetchProducts()
   await fetchUsers()
   await fetchUserStats()
+  await fetchOrders()
 })
 </script>
 
@@ -96,6 +122,9 @@ onMounted(async () => {
 
     <!-- Tabs -->
     <div class="tabs">
+      <button @click="activeTab = 'orders'" :class="{ active: activeTab === 'orders' }">
+        Orders ({{ orders.length }})
+      </button>
       <button @click="activeTab = 'products'" :class="{ active: activeTab === 'products' }">
         Products ({{ products.length }})
       </button>
@@ -105,6 +134,67 @@ onMounted(async () => {
       <button @click="activeTab = 'stats'" :class="{ active: activeTab === 'stats' }">
         User Activity
       </button>
+    </div>
+
+    <!-- Orders Management -->
+     <div v-show="activeTab === 'orders'">
+      <div class="products-table glass-panel">
+        <h3>Customer Orders</h3>
+        <div v-if="orders.length === 0" class="empty-state">
+          <p>No orders found</p>
+        </div>
+        <table v-else>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Shipping Details</th>
+              <th>Date</th>
+              <th>Products</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="order in orders" :key="order._id">
+              <td>
+                <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
+                  {{ order.orderId || order._id.substr(-6).toUpperCase() }}
+                </span>
+              </td>
+              <td>
+                <div style="font-weight: 500;">{{ order.fullName || order.user?.name || 'Unknown' }}</div>
+                <div style="font-size: 0.8em; color: gray;">{{ order.phoneNumber }}</div>
+              </td>
+              <td style="font-size: 0.9em; max-width: 200px;">
+                {{ order.shippingAddress }}
+              </td>
+              <td>{{ new Date(order.createdAt).toLocaleDateString() }}</td>
+              <td>
+                <div v-for="item in order.items" :key="item._id" style="font-size: 0.9em; margin-bottom: 4px;">
+                  {{ item.name }} x{{ item.quantity }}
+                </div>
+              </td>
+              <td style="font-weight: 600;">₹{{ order.totalAmount }}</td>
+              <td>
+                <span class="badge" :class="order.status">{{ order.status }}</span>
+              </td>
+              <td>
+                <select 
+                  :value="order.status" 
+                  @change="updateOrderStatus(order._id, $event.target.value)"
+                  class="status-select"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Product Management -->
@@ -352,6 +442,21 @@ th {
   color: var(--primary-color);
 }
 
+.badge.pending {
+  background: rgba(251, 191, 36, 0.1);
+  color: #d97706;
+}
+
+.badge.completed {
+  background: rgba(74, 222, 128, 0.1);
+  color: #10b981;
+}
+
+.badge.cancelled {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
 .empty-state {
   text-align: center;
   padding: 3rem;
@@ -374,5 +479,20 @@ th {
   th, td {
     padding: 0.75rem 0.5rem;
   }
+}
+</style>
+
+<style scoped>
+.status-select {
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: white;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.status-select:hover {
+  border-color: var(--primary-color);
 }
 </style>

@@ -1,17 +1,19 @@
 <script setup>
 import { ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const email = ref('')
 const password = ref('')
 const auth = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 
 const handleLogin = async () => {
   const success = await auth.login(email.value, password.value)
   if (success) {
-    router.push('/')
+    const redirect = route.query.redirect || '/'
+    router.push(redirect)
   }
 }
 </script>

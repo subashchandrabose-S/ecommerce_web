@@ -5,14 +5,21 @@ import { useRouter } from 'vue-router'
 
 const name = ref('')
 const email = ref('')
+const mobile = ref('')
 const password = ref('')
+const confirmPassword = ref('')
 const auth = useAuthStore()
 const router = useRouter()
 
 const handleRegister = async () => {
-  const success = await auth.register(name.value, email.value, password.value)
+  if (password.value !== confirmPassword.value) {
+    alert('Passwords do not match!')
+    return
+  }
+  const success = await auth.register(name.value, email.value, password.value, mobile.value)
   if (success) {
-    router.push('/')
+    alert('Registration successful! Please login.')
+    router.push('/login')
   }
 }
 </script>
@@ -31,8 +38,16 @@ const handleRegister = async () => {
           <input v-model="email" type="email" required placeholder="Enter your email" />
         </div>
         <div class="form-group">
+          <label>Mobile Number</label>
+          <input v-model="mobile" type="tel" required placeholder="Enter mobile number" />
+        </div>
+        <div class="form-group">
           <label>Password</label>
           <input v-model="password" type="password" required placeholder="Choose a password" />
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input v-model="confirmPassword" type="password" required placeholder="Confirm password" />
         </div>
         <p v-if="auth.error" class="error">{{ auth.error }}</p>
         <button type="submit" class="btn btn-primary" :disabled="auth.loading">

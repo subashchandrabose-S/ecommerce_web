@@ -30,10 +30,22 @@ export const useAuthStore = defineStore('auth', {
                 this.loading = false
             }
         },
-        async register(name, email, password, role = 'user') {
+        async fetchUser() {
+            if (!this.token) return
+            try {
+                const res = await axios.get(`${API_BASE_URL}/auth/user`, {
+                    headers: { 'x-auth-token': this.token }
+                })
+                this.user = res.data
+            } catch (err) {
+                console.error(err)
+                this.logout()
+            }
+        },
+        async register(name, email, password, mobile, role = 'user') {
             this.loading = true
             try {
-                const res = await axios.post(`${API_BASE_URL}/auth/register`, { name, email, password, role })
+                const res = await axios.post(`${API_BASE_URL}/auth/register`, { name, email, password, mobile, role })
                 this.token = res.data.token
                 this.user = res.data.user
                 localStorage.setItem('token', this.token)

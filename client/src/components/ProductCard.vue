@@ -8,6 +8,11 @@ defineProps({
 
 import { useCartStore } from '../stores/cart'
 const cart = useCartStore()
+
+const addToCart = (product) => {
+  cart.addToCart(product)
+  alert(`${product.name} added to cart!`)
+}
 </script>
 
 <template>
@@ -20,7 +25,7 @@ const cart = useCartStore()
       <p class="description">{{ product.description }}</p>
       <div class="footer">
         <span class="price">₹{{ product.price }}</span>
-        <button @click="cart.addToCart(product)" class="btn btn-primary">Add to Cart</button>
+        <button @click="addToCart(product)" class="btn btn-primary">Add to Cart</button>
       </div>
     </div>
   </div>

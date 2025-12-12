@@ -21,10 +21,12 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nursery_e
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const adminRoutes = require('./routes/admin');
+const ordersRoutes = require('./routes/orders');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/orders', ordersRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is running...');

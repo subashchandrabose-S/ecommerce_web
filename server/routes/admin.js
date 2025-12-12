@@ -23,6 +23,22 @@ router.get('/orders', async (req, res) => {
     }
 });
 
+
+// Update order status
+router.put('/orders/:id', async (req, res) => {
+    try {
+        const { status } = req.body;
+        const order = await Order.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            { new: true }
+        );
+        res.json(order);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // Get user orders count
 router.get('/user-stats', async (req, res) => {
     try {

@@ -1,12 +1,69 @@
 <script setup>
 import { useCartStore } from '../stores/cart'
+import { useAuthStore } from '../stores/auth'
+import { useRouter } from 'vue-router'
+import { ref, watch } from 'vue' // Added missing imports
+import axios from 'axios'
+import { API_BASE_URL } from '../config/api'
 
 const cart = useCartStore()
+const auth = useAuthStore()
+const router = useRouter()
 
-const checkout = () => {
-  if (confirm('Proceed to payment? This is a demo, so no real payment will be processed.')) {
-    cart.clearCart()
-    alert('Order placed successfully! Thank you for shopping with us.')
+const userDetails = ref({
+  fullName: auth.user?.name || '',
+  phoneNumber: auth.user?.mobile || '',
+  shippingAddress: ''
+})
+
+// Update user details if auth.user loads later
+watch(() => auth.user, (newVal) => {
+  if (newVal) {
+    userDetails.value.fullName = newVal.name || ''
+    userDetails.value.phoneNumber = newVal.mobile || ''
+  }
+}, { immediate: true })
+
+const checkout = async () => {
+  if (!auth.isAuthenticated) {
+    if (confirm('Please login to complete your purchase. Proceed to login?')) {
+        router.push({ name: 'login', query: { redirect: 'cart' } })
+    }
+    return
+  }
+
+  // Validate User Details
+  if (!userDetails.value.fullName || !userDetails.value.phoneNumber || !userDetails.value.shippingAddress) {
+      alert('Please fill in all shipping details before proceeding.')
+      return
+  }
+
+  if (confirm('Confirm order payment of ₹' + cart.totalPrice + '?')) {
+    try {
+        const res = await axios.post(`${API_BASE_URL}/orders`, {
+            items: cart.items.map(item => ({
+                product: item._id, // Assuming item._id is the product ID
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity
+            })),
+            totalAmount: cart.totalPrice,
+            fullName: userDetails.value.fullName,
+            phoneNumber: userDetails.value.phoneNumber,
+            shippingAddress: userDetails.value.shippingAddress
+        }, {
+            headers: { 'x-auth-token': auth.token }
+        })
+
+        cart.clearCart()
+        // Determine order ID to redirect
+        const orderId = res.data._id
+        // router.push('/my-orders') 
+        router.push(`/payment/${orderId}`)
+    } catch (err) {
+        console.error(err)
+        alert('Failed to place order. Please try again.')
+    }
   }
 }
 
@@ -56,6 +113,23 @@ const checkout = () => {
           <span>Total Price:</span>
           <span>₹{{ cart.totalPrice }}</span>
         </div>
+        
+        <div class="user-details-form">
+          <h4>Shipping Details</h4>
+          <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" v-model="userDetails.fullName" placeholder="Enter your name" required />
+          </div>
+          <div class="form-group">
+             <label for="phoneNumber">Phone Number</label>
+             <input type="tel" id="phoneNumber" v-model="userDetails.phoneNumber" placeholder="Enter phone number" required />
+          </div>
+          <div class="form-group">
+            <label for="shippingAddress">Shipping Address</label>
+            <textarea id="shippingAddress" v-model="userDetails.shippingAddress" rows="3" placeholder="Enter delivery address" required></textarea>
+          </div>
+        </div>
+
         <button @click="checkout" class="btn btn-primary checkout-btn">Proceed to Checkout</button>
       </div>
     </div>
@@ -164,5 +238,46 @@ const checkout = () => {
 .checkout-btn {
   width: 100%;
   margin-top: 1.5rem;
+}
+
+.user-details-form {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  text-align: left;
+}
+
+.user-details-form h4 {
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
 }
 </style>
