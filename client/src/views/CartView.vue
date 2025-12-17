@@ -98,7 +98,7 @@ const checkout = async () => {
             <button @click="cart.removeFromCart(item._id)" class="btn-remove">Remove</button>
           </div>
           <div class="item-total">
-            ₹{{ (item.price * item.quantity).toFixed(2) }}
+            ₹{{ (item.price * item.quantity ).toFixed(2) }}
           </div>
         </div>
       </div>
@@ -274,38 +274,38 @@ const checkout = async () => {
   transition: border-color 0.2s;
 }
 
-  .form-group input:focus,
-  .form-group textarea:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+@media (max-width: 768px) {
+  .cart-content {
+    grid-template-columns: 1fr;
   }
 
-  @media (max-width: 768px) {
-    .cart-content {
-      grid-template-columns: 1fr;
-    }
-
-    .cart-item {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-
-    .cart-item img {
-      width: 100%;
-      height: 200px;
-    }
-
-    .item-actions {
-      width: 100%;
-      justify-content: space-between;
-    }
-
-    .item-total {
-      text-align: left;
-      width: 100%;
-      margin-top: 0.5rem;
-    }
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
+
+  .cart-item img {
+    width: 100%;
+    height: 200px;
+  }
+
+  .item-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .item-total {
+    text-align: left;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
 </style>
