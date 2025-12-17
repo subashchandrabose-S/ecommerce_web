@@ -155,6 +155,48 @@ const products = [
         featured: false
     },
 
+    // Herbal Plants
+    {
+        name: 'Lemongrass',
+        description: 'Citrusy herb perfect for tea and cooking. Natural mosquito repellent.',
+        price: 499,
+        category: 'Nursery',
+        subCategory: 'Herbal',
+        image: 'https://images.unsplash.com/photo-1612187659858-fbc2c8e31a6a?auto=format&fit=crop&w=600&q=80',
+        stock: 60,
+        featured: false
+    },
+    {
+        name: 'Chamomile',
+        description: 'Delicate flowers for soothing tea. Calming and relaxing properties.',
+        price: 699,
+        category: 'Nursery',
+        subCategory: 'Herbal',
+        image: 'https://images.unsplash.com/photo-1594494970428-667794273523?auto=format&fit=crop&w=600&q=80',
+        stock: 50,
+        featured: true
+    },
+    {
+        name: 'Ashwagandha',
+        description: 'Ancient medicinal herb. Reduces stress and improves energy.',
+        price: 899,
+        category: 'Nursery',
+        subCategory: 'Herbal',
+        image: 'https://images.unsplash.com/photo-1615486511484-92e172cc4fe0?auto=format&fit=crop&w=600&q=80', // Using generic green plant if specific not found, or use one of the unused ones
+        stock: 40,
+        featured: false
+    },
+    {
+        name: 'Thyme',
+        description: 'Culinary and medicinal herb. Antiseptic properties and great flavor.',
+        price: 399,
+        category: 'Nursery',
+        subCategory: 'Herbal',
+        image: 'https://images.unsplash.com/photo-1595186937662-ac04499d69d2?auto=format&fit=crop&w=600&q=80',
+        stock: 80,
+        featured: false
+    },
+
     // Chemical Products
     {
         name: 'All-Purpose Fertilizer',
@@ -179,7 +221,7 @@ const products = [
         description: 'Stimulates root growth for cuttings. Propagate your plants faster.',
         price: 849,
         category: 'Chemical',
-        image: 'https://plus.unsplash.com/premium_photo-1679516785093-660168393850?auto=format&fit=crop&w=600&q=80',
+        image: 'https://images.unsplash.com/photo-1628676726581-2c1b87f2c6e6?auto=format&fit=crop&w=600&q=80',
         stock: 100,
         featured: false
     }
@@ -193,6 +235,7 @@ const seedDB = async () => {
     console.log('🌿 Indoor plants: 5');
     console.log('🌻 Outdoor plants: 5');
     console.log('💊 Medicine plants: 4');
+    console.log('🌱 Herbal plants: 4');
     console.log('🧪 Chemical products: 3');
     console.log('💰 All prices in Indian Rupees (₹)');
     mongoose.connection.close();

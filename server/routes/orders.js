@@ -67,4 +67,28 @@ router.get('/:id', auth, async (req, res) => {
     }
 });
 
+// Update order status to paid
+router.put('/:id/pay', auth, async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        // Check if user owns the order
+        if (order.user.toString() !== req.user.id) {
+            return res.status(401).json({ message: 'Not authorized' });
+        }
+
+        order.status = 'completed';
+        await order.save();
+
+        res.json(order);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;

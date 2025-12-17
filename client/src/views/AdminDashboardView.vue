@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { API_BASE_URL } from '../config/api'
 import { useAuthStore } from '../stores/auth'
+import * as XLSX from 'xlsx'
 
 const products = ref([])
 const users = ref([])
@@ -58,6 +59,35 @@ const fetchOrders = async () => {
   } catch (err) {
     console.error(err)
   }
+}
+
+const exportOrders = () => {
+  const data = orders.value.map(order => {
+    const customerName = order.fullName || order.user?.name || 'Unknown'
+    const firstLetter = customerName.charAt(0).toUpperCase()
+    // Ensure orderId exists, fallback to slice of _id if not (though model generates it)
+    const orderIdNum = order.orderId || order._id.slice(-5).toUpperCase()
+    const customOrderId = `${firstLetter}${orderIdNum}`
+    
+    return {
+      'Order ID': customOrderId,
+      'Customer Name': customerName,
+      'Phone': order.phoneNumber,
+      'Shipping Address': order.shippingAddress,
+      'Date': new Date(order.createdAt).toLocaleDateString(),
+      'Items': order.items.map(i => `${i.name} x${i.quantity}`).join(', '),
+      'Total': order.totalAmount,
+      'Status': order.status
+    }
+  })
+
+  // Create worksheet
+  const ws = XLSX.utils.json_to_sheet(data)
+  // Create workbook
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, "Orders")
+  // Save file
+  XLSX.writeFile(wb, "customer_orders.xlsx")
 }
 
 const updateOrderStatus = async (id, status) => {
@@ -117,6 +147,9 @@ onMounted(async () => {
       <h1>Admin Dashboard</h1>
       <button v-if="activeTab === 'products'" @click="showForm = !showForm" class="btn btn-primary">
         {{ showForm ? 'Cancel' : 'Add New Product' }}
+      </button>
+      <button v-if="activeTab === 'orders'" @click="exportOrders" class="btn btn-secondary">
+        Export to Excel
       </button>
     </header>
 

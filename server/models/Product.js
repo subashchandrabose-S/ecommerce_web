@@ -20,7 +20,7 @@ const productSchema = new mongoose.Schema({
     },
     subCategory: {
         type: String,
-        enum: ['Indoor', 'Outdoor', 'Medicine', 'Other'],
+        enum: ['Indoor', 'Outdoor', 'Medicine', 'Herbal', 'Other'],
     },
     image: {
         type: String,

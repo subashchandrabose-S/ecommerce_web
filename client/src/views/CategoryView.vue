@@ -25,8 +25,14 @@ const categoryInfo = {
     title: 'Medicine Plants',
     icon: '💊',
     description: 'Natural healing plants for wellness and health'
-  }
+  },
+  herbal: {
+    title: 'Herbal Plants',
+    icon: '🌱',
+    description: 'Natural healing plants for wellness and health'
+  },
 }
+
 
 const fetchProducts = async () => {
   loading.value = true

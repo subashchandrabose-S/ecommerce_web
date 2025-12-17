@@ -26,9 +26,19 @@ onMounted(async () => {
     }
 })
 
-const handlePayment = () => {
-    alert('Payment confirmed! Thank you.')
-    router.push('/')
+const handlePayment = async () => {
+    if (!confirm('Confirm you have made the payment?')) return
+
+    try {
+        await axios.put(`${API_BASE_URL}/orders/${route.params.id}/pay`, {}, {
+            headers: { 'x-auth-token': auth.token }
+        })
+        alert('Payment confirmed! Thank you for your order.')
+        router.push('/')
+    } catch (err) {
+        console.error(err)
+        alert('Failed to confirm payment. Please try again.')
+    }
 }
 </script>
 

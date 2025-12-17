@@ -16,7 +16,9 @@ router.get('/users', async (req, res) => {
 // Get all orders
 router.get('/orders', async (req, res) => {
     try {
-        const orders = await Order.find().populate('user', 'name email');
+        const orders = await Order.find()
+            .populate('user', 'name email')
+            .sort({ createdAt: -1 });
         res.json(orders);
     } catch (err) {
         res.status(500).json({ message: err.message });

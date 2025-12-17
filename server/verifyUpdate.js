@@ -20,12 +20,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nursery_e
             await order.save();
             console.log('Created order:', order._id, order.status);
 
-            // 2. Simulate API Call (Update Status) - using Direct DB update to mock what the route does, 
-            // OR actually spin up the server? 
-            // Ideally we test the route, but that requires running the express app.
-            // For now, let's just verifying the DB logic or use a small internal mock of the route handler?
-            // Let's just create a quick test by importing the app? No, that might be complex with ports.
-            // Let's just rely on the fact that I fixed the code. I'll test the findByIdAndUpdate logic just to be safe it works as expected.
+
 
             const updated = await Order.findByIdAndUpdate(
                 order._id,

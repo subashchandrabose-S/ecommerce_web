@@ -1,7 +1,10 @@
 :root {
-  --primary-color: #4ade80; /* Fresh Green */
-  --secondary-color: #2dd4bf; /* Teal */
-  --accent-color: #f472b6; /* Pink */
+  --primary-color: #4ade80;
+  /* Fresh Green */
+  --secondary-color: #2dd4bf;
+  /* Teal */
+  --accent-color: #f472b6;
+  /* Pink */
   --dark-bg: #0f172a;
   --light-bg: #f8fafc;
   --glass-bg: rgba(255, 255, 255, 0.1);
@@ -69,4 +72,15 @@ a {
 ul {
   list-style: none;
   padding: 0;
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
 }

@@ -45,12 +45,9 @@ const orderSchema = new mongoose.Schema({
 
 orderSchema.pre('save', async function () {
     if (!this.orderId) {
-        const date = new Date();
-        const year = date.getFullYear().toString().substr(-2);
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-        this.orderId = `ORD-${year}${month}${day}-${random}`;
+        // Generate a random 5-digit number
+        const random = Math.floor(10000 + Math.random() * 90000).toString();
+        this.orderId = random;
     }
 });
 
