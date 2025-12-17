@@ -169,9 +169,21 @@ const handlePayment = async () => {
     padding-left: 1.2rem;
 }
 
-.full-width {
-    width: 100%;
     padding: 1rem;
     font-size: 1.1rem;
+}
+
+@media (max-width: 480px) {
+    .payment-card {
+        padding: 1.5rem 1rem;
+    }
+    
+    .amount {
+        font-size: 2rem;
+    }
+    
+    .order-id {
+        font-size: 0.8rem;
+    }
 }
 </style>

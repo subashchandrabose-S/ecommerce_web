@@ -14,6 +14,13 @@
   --text-light: #f1f5f9;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;

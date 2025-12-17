@@ -10,6 +10,7 @@ const isAuthenticated = computed(() => auth.isAuthenticated)
 const isAdmin = computed(() => auth.isAdmin)
 const mobileMenuOpen = ref(false)
 
+
 const logout = () => {
   auth.logout()
   mobileMenuOpen.value = false
@@ -18,6 +19,26 @@ const logout = () => {
 const closeMenu = () => {
   mobileMenuOpen.value = false
 }
+
+// Theme Logic
+const isDark = ref(localStorage.getItem('theme') === 'dark')
+
+const toggleTheme = () => {
+  isDark.value = !isDark.value
+  if (isDark.value) {
+    document.body.classList.add('dark-mode')
+    localStorage.setItem('theme', 'dark')
+  } else {
+    document.body.classList.remove('dark-mode')
+    localStorage.setItem('theme', 'light')
+  }
+}
+
+// Initialize theme
+if (isDark.value) {
+  document.body.classList.add('dark-mode')
+}
+
 </script>
 
 <template>
@@ -25,6 +46,11 @@ const closeMenu = () => {
     <div class="container nav-content">
       <RouterLink to="/" class="logo">NurseryEco</RouterLink>
       
+      <!-- Theme Toggle (Mobile) -->
+      <button class="theme-btn mobile-theme-btn" @click="toggleTheme" :title="isDark ? 'Light Mode' : 'Dark Mode'">
+        {{ isDark ? '☀️' : '🌙' }}
+      </button>
+
       <!-- Hamburger Menu Button -->
       <button class="hamburger" @click="mobileMenuOpen = !mobileMenuOpen">
         <span></span>
@@ -49,6 +75,9 @@ const closeMenu = () => {
           <RouterLink to="/admin-login">Admin Login</RouterLink>
           <RouterLink to="/register" class="btn btn-primary">Register</RouterLink>
         </div>
+        <button class="theme-btn" @click="toggleTheme" :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+          {{ isDark ? '☀️' : '🌙' }}
+        </button>
       </div>
 
       <!-- Mobile Sliding Menu -->
@@ -285,6 +314,40 @@ const closeMenu = () => {
     padding: 0.75rem 0.875rem;
   }
 }
+</style>
+
+<style scoped>
+.theme-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-btn:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.mobile-theme-btn {
+  display: none;
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+  .mobile-theme-btn {
+    display: flex;
+  }
+}
+
+
+
 </style>
 
 <style scoped>
