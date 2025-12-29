@@ -3,18 +3,26 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcryptjs'); // You'll need to install this
 const jwt = require('jsonwebtoken');
+const { auth } = require('../middleware/auth');
 
 // Register
 router.post('/register', async (req, res) => {
     try {
         const { name, email, password, mobile, role } = req.body;
-        let user = await User.findOne({ email });
+        const lowerEmail = email.toLowerCase();
+        let user = await User.findOne({ email: lowerEmail });
         if (user) return res.status(400).json({ message: 'User already exists' });
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        user = new User({ name, email, password: hashedPassword, mobile, role });
+        user = new User({
+            name,
+            email: lowerEmail,
+            password: hashedPassword,
+            mobile,
+            role: 'user' // Force user role for registration
+        });
         await user.save();
 
         const payload = { user: { id: user.id, role: user.role } };
@@ -32,7 +40,7 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: email.toLowerCase() });
         if (!user) return res.status(400).json({ message: 'Invalid Credentials' });
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -50,7 +58,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Get User Data
-router.get('/user', require('../middleware/auth'), async (req, res) => {
+router.get('/user', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
         res.json(user);

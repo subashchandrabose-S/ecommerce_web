@@ -19,7 +19,7 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="auth-container">
+  <div class="auth-container container animate-fade">
     <div class="auth-card glass-panel">
       <h2>Welcome Back</h2>
       <form @submit.prevent="handleLogin">
@@ -38,6 +38,9 @@ const handleLogin = async () => {
       </form>
       <p class="switch-auth">
         Don't have an account? <RouterLink to="/register">Register</RouterLink>
+      </p>
+      <p class="admin-link">
+        <RouterLink to="/admin-login">Go to Admin Login</RouterLink>
       </p>
     </div>
   </div>
@@ -123,6 +126,21 @@ button {
   color: var(--primary-color);
   font-weight: 600;
   text-decoration: underline;
+}
+
+.admin-link {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+}
+
+.admin-link a {
+  color: #94a3b8;
+  transition: color 0.3s;
+}
+
+.admin-link a:hover {
+  color: var(--primary-color);
 }
 
 @media (max-width: 768px) {

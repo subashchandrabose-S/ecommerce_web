@@ -34,16 +34,22 @@ const addToCart = (product) => {
 <style scoped>
 .product-card {
   overflow: hidden;
-  transition: transform 0.3s;
+  transition: var(--transition);
+  border-radius: var(--radius-md);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
 .image-container {
-  height: 200px;
+  height: 240px;
   overflow: hidden;
+  position: relative;
 }
 
 img {
@@ -54,27 +60,34 @@ img {
 
 .content {
   padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 h3 {
   margin: 0 0 0.5rem 0;
   font-size: 1.25rem;
+  color: var(--text-dark);
 }
 
 .description {
-  color: #64748b;
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  line-height: 1.5;
+  flex: 1;
 }
 
 .footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: auto;
 }
 
 .price {

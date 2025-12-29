@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { useAuthStore } from '../stores/auth'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -65,6 +66,33 @@ const router = createRouter({
             meta: { requiresAuth: true }
         }
     ]
+})
+
+router.beforeEach(async (to, from, next) => {
+    const auth = useAuthStore()
+
+    // If we have a token but no user info, try to fetch it first
+    if (auth.token && !auth.user) {
+        await auth.fetchUser()
+    }
+
+    // If route requires auth
+    if (to.meta.requiresAuth) {
+        if (!auth.isAuthenticated) {
+            // Redirect to appropriate login
+            if (to.meta.requiresAdmin) {
+                return next('/admin-login')
+            }
+            return next('/login')
+        }
+
+        // If route requires admin
+        if (to.meta.requiresAdmin && !auth.isAdmin) {
+            return next('/')
+        }
+    }
+
+    next()
 })
 
 export default router

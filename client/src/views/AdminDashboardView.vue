@@ -1,9 +1,19 @@
-rnt<script setup>
-import { ref, onMounted } from 'vue'
+<script setup>
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { API_BASE_URL } from '../config/api'
 import { useAuthStore } from '../stores/auth'
 import * as XLSX from 'xlsx'
+
+const totalRevenue = computed(() => {
+  return orders.value
+    .filter(o => o.status === 'completed')
+    .reduce((acc, curr) => acc + curr.totalAmount, 0)
+})
+
+const completedOrdersCount = computed(() => {
+  return orders.value.filter(o => o.status === 'completed').length
+})
 
 const products = ref([])
 const users = ref([])
@@ -105,7 +115,7 @@ const updateOrderStatus = async (id, status) => {
 
 const handleSubmit = async () => {
   try {
-    await axios.post(`${API_BASE_URL}/products`, form.value)
+    await axios.post(`${API_BASE_URL}/products`, form.value, { headers: { 'x-auth-token': auth.token } })
     await fetchProducts()
     showForm.value = false
     form.value = {
@@ -125,7 +135,7 @@ const handleSubmit = async () => {
 const deleteProduct = async (id) => {
   if (!confirm('Are you sure?')) return
   try {
-    await axios.delete(`${API_BASE_URL}/products/${id}`)
+    await axios.delete(`${API_BASE_URL}/products/${id}`, { headers: { 'x-auth-token': auth.token } })
     await fetchProducts()
   } catch (err) {
     console.error(err)
@@ -142,7 +152,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="admin-dashboard">
+  <div class="admin-dashboard container animate-fade">
     <header class="header">
       <h1>Admin Dashboard</h1>
       <button v-if="activeTab === 'products'" @click="showForm = !showForm" class="btn btn-primary">
@@ -152,6 +162,38 @@ onMounted(async () => {
         Export to Excel
       </button>
     </header>
+
+    <!-- Stats Overview -->
+    <div class="stats-overview animate-fade">
+      <div class="stat-card glass-panel">
+        <div class="stat-icon">💰</div>
+        <div class="stat-info">
+          <p>Total Revenue</p>
+          <h3>₹{{ totalRevenue.toLocaleString() }}</h3>
+        </div>
+      </div>
+      <div class="stat-card glass-panel">
+        <div class="stat-icon">📦</div>
+        <div class="stat-info">
+          <p>Completed Orders</p>
+          <h3>{{ completedOrdersCount }}</h3>
+        </div>
+      </div>
+      <div class="stat-card glass-panel">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+          <p>Total Users</p>
+          <h3>{{ users.length }}</h3>
+        </div>
+      </div>
+      <div class="stat-card glass-panel">
+        <div class="stat-icon">🌱</div>
+        <div class="stat-info">
+          <p>Live Products</p>
+          <h3>{{ products.length }}</h3>
+        </div>
+      </div>
+    </div>
 
     <!-- Tabs -->
     <div class="tabs">
@@ -176,7 +218,8 @@ onMounted(async () => {
         <div v-if="orders.length === 0" class="empty-state">
           <p>No orders found</p>
         </div>
-        <table v-else>
+        <div v-else class="table-responsive">
+          <table>
           <thead>
             <tr>
               <th>Order ID</th>
@@ -256,12 +299,12 @@ onMounted(async () => {
               <input v-model="form.stock" type="number" required />
             </div>
             <div class="form-group full-width">
-              <label>Image URL</label>
-              <input v-model="form.image" required placeholder="https://..." />
+              <label>Description</label>
+              <textarea v-model="form.description" rows="3"></textarea>
             </div>
             <div class="form-group full-width">
-              <label>Description</label>
-              <textarea v-model="form.description" required></textarea>
+              <label>Image URL</label>
+              <input v-model="form.image" placeholder="https://example.com/plant.jpg" />
             </div>
           </div>
           <button type="submit" class="btn btn-primary">Save Product</button>
@@ -269,7 +312,8 @@ onMounted(async () => {
       </div>
 
       <div class="products-table glass-panel">
-        <table>
+        <div class="table-responsive">
+          <table>
           <thead>
             <tr>
               <th>Name</th>
@@ -293,12 +337,14 @@ onMounted(async () => {
         </table>
       </div>
     </div>
+    </div>
 
     <!-- User Management -->
     <div v-show="activeTab === 'users'">
       <div class="products-table glass-panel">
         <h3>Registered Users</h3>
-        <table>
+        <div class="table-responsive">
+          <table>
           <thead>
             <tr>
               <th>Name</th>
@@ -318,6 +364,7 @@ onMounted(async () => {
         </table>
       </div>
     </div>
+    </div>
 
     <!-- User Stats -->
     <div v-show="activeTab === 'stats'">
@@ -326,7 +373,8 @@ onMounted(async () => {
         <div v-if="userStats.length === 0" class="empty-state">
           <p>No orders yet</p>
         </div>
-        <table v-else>
+        <div v-else class="table-responsive">
+          <table>
           <thead>
             <tr>
               <th>User</th>
@@ -347,6 +395,7 @@ onMounted(async () => {
           </tbody>
         </table>
       </div>
+    </div>
     </div>
   </div>
 </template>
@@ -496,6 +545,49 @@ th {
   color: #64748b;
 }
 
+/* Stats Cards */
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  background: rgba(34, 197, 94, 0.1);
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+}
+
+.stat-info p {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.stat-info h3 {
+  margin-bottom: 0;
+  font-size: 1.5rem;
+  color: var(--text-dark);
+}
+
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;
@@ -511,6 +603,17 @@ th {
   
   th, td {
     padding: 0.75rem 0.5rem;
+  }
+
+  .stats-overview {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-overview {
+    grid-template-columns: 1fr;
   }
 }
 </style>

@@ -32,7 +32,7 @@ watch(() => props.category, fetchProducts)
 </script>
 
 <template>
-  <div class="product-list">
+  <div class="product-list animate-fade container">
     <header class="header">
       <h1>{{ category }} Products</h1>
       <p>Explore our collection of {{ category.toLowerCase() }} items.</p>
@@ -97,6 +97,10 @@ watch(() => props.category, fetchProducts)
   
   .header p {
     font-size: 0.95rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

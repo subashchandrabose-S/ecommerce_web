@@ -4,9 +4,21 @@ const Product = require('./models/Product');
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nursery_ecommerce')
+const MONGODB_URI = process.env.MONGODB_URI;
+const DB_NAME = process.env.MONGODB_DB || 'nursery_ecommerce';
+
+if (!MONGODB_URI) {
+    console.error('MONGODB_URI not set. Please add it to server/.env before running seed.js');
+    process.exit(1);
+}
+
+mongoose
+    .connect(MONGODB_URI, { dbName: DB_NAME })
     .then(() => console.log('MongoDB Connected for Seeding'))
-    .catch(err => console.error(err));
+    .catch((err) => {
+        console.error('MongoDB connection error for seeding:', err.message);
+        process.exit(1);
+    });
 
 const products = [
     // Indoor Plants

@@ -5,8 +5,16 @@ const fs = require('fs');
 
 dotenv.config();
 
+const MONGODB_URI = process.env.MONGODB_URI;
+const DB_NAME = process.env.MONGODB_DB || 'nursery_ecommerce';
+
+if (!MONGODB_URI) {
+    console.error('MONGODB_URI not set. Please add it to server/.env before running verifyUpdate.js');
+    process.exit(1);
+}
+
 // Simple mock update test
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nursery_ecommerce')
+mongoose.connect(MONGODB_URI, { dbName: DB_NAME })
     .then(async () => {
         console.log('Connected to DB');
         try {

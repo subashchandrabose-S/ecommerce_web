@@ -6,7 +6,15 @@ dotenv.config();
 
 const fs = require('fs');
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nursery_ecommerce')
+const MONGODB_URI = process.env.MONGODB_URI;
+const DB_NAME = process.env.MONGODB_DB || 'nursery_ecommerce';
+
+if (!MONGODB_URI) {
+    console.error('MONGODB_URI not set. Please add it to server/.env before running verifyOrder.js');
+    process.exit(1);
+}
+
+mongoose.connect(MONGODB_URI, { dbName: DB_NAME })
     .then(async () => {
         console.log('Connected to DB');
         try {

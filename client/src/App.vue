@@ -1,6 +1,7 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import Navbar from './components/Navbar.vue'
+import Footer from './components/Footer.vue'
 import { useAuthStore } from './stores/auth'
 import { onMounted } from 'vue'
 
@@ -15,19 +16,12 @@ onMounted(() => {
 
 <template>
   <Navbar />
-  <main class="container">
+  <main>
     <RouterView />
   </main>
+  <Footer />
 </template>
 
 <style scoped>
-main {
-  padding: 2rem 0;
-}
-
-@media (max-width: 768px) {
-  main {
-    padding-top: 80px;
-  }
-}
+/* Scoped overrides if any */
 </style>

@@ -70,7 +70,7 @@ const checkout = async () => {
 </script>
 
 <template>
-  <div class="cart-view">
+  <div class="cart-view animate-fade container">
     <header class="header">
       <h1>Your Shopping Cart</h1>
     </header>
@@ -138,8 +138,7 @@ const checkout = async () => {
 
 <style scoped>
 .cart-view {
-  max-width: 1000px;
-  margin: 0 auto;
+  margin-top: 2rem;
 }
 
 .header {

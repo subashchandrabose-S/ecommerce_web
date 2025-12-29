@@ -43,7 +43,7 @@ const handlePayment = async () => {
 </script>
 
 <template>
-    <div class="payment-view container">
+    <div class="payment-view container animate-fade">
         <div v-if="loading" class="loading">Loading...</div>
         <div v-else-if="error" class="error">{{ error }}</div>
         <div v-else class="payment-card glass-panel">
@@ -169,6 +169,8 @@ const handlePayment = async () => {
     padding-left: 1.2rem;
 }
 
+.full-width {
+    width: 100%;
     padding: 1rem;
     font-size: 1.1rem;
 }

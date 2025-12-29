@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const Order = require('../models/Order');
+const { auth, admin } = require('../middleware/auth');
+
+// Protect all routes in this file
+router.use(auth);
+router.use(admin);
 
 // Get all users
 router.get('/users', async (req, res) => {

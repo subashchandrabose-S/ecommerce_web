@@ -25,7 +25,7 @@ const handleRegister = async () => {
 </script>
 
 <template>
-  <div class="auth-container">
+  <div class="auth-container container animate-fade">
     <div class="auth-card glass-panel">
       <h2>Create Account</h2>
       <form @submit.prevent="handleRegister">

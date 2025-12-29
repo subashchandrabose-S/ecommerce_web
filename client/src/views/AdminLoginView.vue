@@ -23,11 +23,15 @@ const handleAdminLogin = async () => {
 </script>
 
 <template>
-  <div class="auth-container">
+  <div class="auth-container container animate-fade">
     <div class="auth-card glass-panel">
       <h2>Admin Login</h2>
       <p class="admin-notice">⚠️ This area is for administrators only</p>
-      <form @submit.prevent="handleAdminLogin">
+      <div v-if="auth.isAdmin" class="already-logged-in-state">
+        <p>You are already logged in as an administrator.</p>
+        <RouterLink to="/admin" class="btn btn-primary">Go to Admin Dashboard</RouterLink>
+      </div>
+      <form v-else @submit.prevent="handleAdminLogin">
         <div class="form-group">
           <label>Admin Email</label>
           <input v-model="email" type="email" required placeholder="Enter admin email" />
@@ -140,6 +144,17 @@ button {
   color: var(--primary-color);
   font-weight: 600;
   text-decoration: underline;
+}
+
+.already-logged-in-state {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.already-logged-in-state p {
+  margin-bottom: 2rem;
+  color: #64748b;
+  font-size: 1.1rem;
 }
 
 @media (max-width: 768px) {

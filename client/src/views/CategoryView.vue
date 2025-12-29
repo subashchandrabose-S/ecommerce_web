@@ -57,7 +57,7 @@ onMounted(fetchProducts)
 </script>
 
 <template>
-  <div class="category-view">
+  <div class="category-view animate-fade container">
     <header class="category-header glass-panel">
       <div class="header-content">
         <div class="category-icon-large">{{ categoryInfo[categoryName]?.icon }}</div>
@@ -81,8 +81,6 @@ onMounted(fetchProducts)
 
 <style scoped>
 .category-view {
-  max-width: 1400px;
-  margin: 0 auto;
   padding: 0 20px;
 }
 
@@ -155,6 +153,12 @@ onMounted(fetchProducts)
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .products-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
