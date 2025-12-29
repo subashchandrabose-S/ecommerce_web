@@ -312,7 +312,7 @@ onMounted(async () => {
       </div>
 
       <div class="products-table glass-panel">
-        <div class="table-responsive">
+      <div class="table-responsive">
           <table>
           <thead>
             <tr>
@@ -364,7 +364,6 @@ onMounted(async () => {
         </table>
       </div>
     </div>
-    </div>
 
     <!-- User Stats -->
     <div v-show="activeTab === 'stats'">
@@ -395,7 +394,6 @@ onMounted(async () => {
           </tbody>
         </table>
       </div>
-    </div>
     </div>
   </div>
 </template>
