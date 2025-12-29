@@ -48,8 +48,17 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
-// Simple health route (similar to reference)
+// Health route - works for both /api/health and /health
 app.get('/api/health', (req, res) => {
+    res.json({
+        message: 'API is running',
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development',
+        database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    });
+});
+
+app.get('/health', (req, res) => {
     res.json({
         message: 'API is running',
         timestamp: new Date().toISOString(),
@@ -69,6 +78,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/orders', ordersRoutes);
 
+// Root route
 app.get('/', (req, res) => {
     res.json({
         message: 'Nursery E-commerce API',
@@ -81,6 +91,11 @@ app.get('/', (req, res) => {
             orders: '/api/orders',
         },
     });
+});
+
+// 404 handler for API routes
+app.use('/api/*', (req, res) => {
+    res.status(404).json({ message: 'API route not found', path: req.originalUrl });
 });
 
 // Export for Vercel
