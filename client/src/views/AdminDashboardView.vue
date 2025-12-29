@@ -364,6 +364,7 @@ onMounted(async () => {
         </table>
       </div>
     </div>
+    </div>
 
     <!-- User Stats -->
     <div v-show="activeTab === 'stats'">
