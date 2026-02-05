@@ -45,7 +45,6 @@ const closeMenu = () => {
         </div>
         <div v-else class="auth-links">
           <RouterLink to="/login">Login</RouterLink>
-          <RouterLink to="/admin-login">Admin Login</RouterLink>
           <RouterLink to="/register" class="btn btn-primary">Register</RouterLink>
         </div>
       </div>

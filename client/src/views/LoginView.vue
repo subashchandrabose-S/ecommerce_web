@@ -11,7 +11,11 @@ const router = useRouter()
 const handleLogin = async () => {
   const success = await auth.login(email.value, password.value)
   if (success) {
-    router.push('/')
+    if (auth.isAdmin) {
+      router.push('/admin')
+    } else {
+      router.push('/')
+    }
   }
 }
 </script>

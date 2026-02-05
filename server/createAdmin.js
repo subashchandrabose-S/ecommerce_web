@@ -11,43 +11,44 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nursery_e
 
 const createAdmin = async () => {
     try {
-        // Check if admin already exists
-        const existingAdmin = await User.findOne({ email: 'admin@nursery.com' });
+        const newPassword = 'NurseryAdmin@2025!';
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-        if (existingAdmin) {
-            console.log('Admin user already exists!');
-            console.log('Email: admin@nursery.com');
-            console.log('Password: admin123');
-            mongoose.connection.close();
-            return;
+        // Check if admin already exists
+        let admin = await User.findOne({ email: 'admin@nursery.com' });
+
+        if (admin) {
+            console.log('Admin user found. Updating password...');
+            admin.password = hashedPassword;
+            admin.role = 'admin'; // Ensure role is admin
+            await admin.save();
+            console.log('✅ Admin password updated successfully!');
+        } else {
+            console.log('Creating new admin user...');
+            admin = new User({
+                name: 'Admin User',
+                email: 'admin@nursery.com',
+                password: hashedPassword,
+                role: 'admin'
+            });
+            await admin.save();
+            console.log('✅ Admin user created successfully!');
         }
 
-        // Create admin user
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash('admin123', salt);
-
-        const admin = new User({
-            name: 'Admin User',
-            email: 'admin@nursery.com',
-            password: hashedPassword,
-            role: 'admin'
-        });
-
-        await admin.save();
-        console.log('✅ Admin user created successfully!');
         console.log('');
         console.log('=================================');
         console.log('Admin Login Credentials:');
         console.log('=================================');
         console.log('Email: admin@nursery.com');
-        console.log('Password: admin123');
+        console.log('Password: ' + newPassword);
         console.log('=================================');
         console.log('');
-        console.log('You can now login at: http://localhost:5173/admin-login');
+        console.log('You can now login at: http://localhost:5173/login');
 
         mongoose.connection.close();
     } catch (err) {
-        console.error('Error creating admin:', err);
+        console.error('Error creating/updating admin:', err);
         mongoose.connection.close();
     }
 };
