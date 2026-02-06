@@ -1,13 +1,23 @@
-const mongoose = require('mongoose');
+const admin = require('firebase-admin');
+const serviceAccount = require('./serviceAccountKey.json');
 
-const connectDB = async () => {
-    try {
-        const conn = await mongoose.connect(process.env.MONGODB_URI);
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
-    } catch (error) {
-        console.error('MongoDB Connection Error:', error.message);
-        process.exit(1);
+// Initialize immediately
+try {
+    if (!admin.apps.length) {
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+        });
+        console.log('Firebase Admin Initialized');
     }
+} catch (error) {
+    console.error('Firebase Connection Error:', error.message);
+    process.exit(1);
+}
+
+const db = admin.firestore();
+
+const connectDB = () => {
+    console.log('Firestore connected');
 };
 
-module.exports = connectDB;
+module.exports = { connectDB, db, admin };

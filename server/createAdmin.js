@@ -1,13 +1,11 @@
-const mongoose = require('mongoose');
+const { connectDB } = require('./config/db');
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
 const User = require('./models/User');
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nursery_ecommerce')
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.error(err));
+connectDB();
 
 const createAdmin = async () => {
     try {
@@ -46,10 +44,10 @@ const createAdmin = async () => {
         console.log('');
         console.log('You can now login at: http://localhost:5173/login');
 
-        mongoose.connection.close();
+        process.exit(0);
     } catch (err) {
         console.error('Error creating/updating admin:', err);
-        mongoose.connection.close();
+        process.exit(1);
     }
 };
 

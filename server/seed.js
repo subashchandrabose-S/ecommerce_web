@@ -1,12 +1,11 @@
-const mongoose = require('mongoose');
+const { db, connectDB } = require('./config/db');
 const dotenv = require('dotenv');
 const Product = require('./models/Product');
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nursery_ecommerce')
-    .then(() => console.log('MongoDB Connected for Seeding'))
-    .catch(err => console.error(err));
+// Initialize Firebase
+connectDB();
 
 const products = [
     // Indoor Plants
@@ -186,16 +185,34 @@ const products = [
 ];
 
 const seedDB = async () => {
-    await Product.deleteMany({});
-    await Product.insertMany(products);
-    console.log('✅ Database Seeded with categorized plants!');
-    console.log(`📦 Total products: ${products.length}`);
-    console.log('🌿 Indoor plants: 5');
-    console.log('🌻 Outdoor plants: 5');
-    console.log('💊 Medicine plants: 4');
-    console.log('🧪 Chemical products: 3');
-    console.log('💰 All prices in Indian Rupees (₹)');
-    mongoose.connection.close();
+    try {
+        console.log('Clearing existing products...');
+        const snapshot = await db.collection('products').get();
+        if (!snapshot.empty) {
+            const batch = db.batch();
+            snapshot.docs.forEach((doc) => {
+                batch.delete(doc.ref);
+            });
+            await batch.commit();
+        }
+
+        console.log('Seeding products...');
+        for (const p of products) {
+            await new Product(p).save();
+        }
+
+        console.log('✅ Database Seeded with categorized plants!');
+        console.log(`📦 Total products: ${products.length}`);
+        console.log('🌿 Indoor plants: 5');
+        console.log('🌻 Outdoor plants: 5');
+        console.log('💊 Medicine plants: 4');
+        console.log('🧪 Chemical products: 3');
+        console.log('💰 All prices in Indian Rupees (₹)');
+        process.exit(0);
+    } catch (error) {
+        console.error('Error seeding database:', error);
+        process.exit(1);
+    }
 };
 
 seedDB();
