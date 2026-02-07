@@ -1,9 +1,27 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const admin = require('firebase-admin');
 
 // Initialize immediately using environment variables
 try {
     if (!admin.apps.length) {
+        const requiredVars = [
+            'FIREBASE_PROJECT_ID',
+            'FIREBASE_PRIVATE_KEY_ID',
+            'FIREBASE_PRIVATE_KEY',
+            'FIREBASE_CLIENT_EMAIL',
+            'FIREBASE_CLIENT_ID'
+        ];
+
+        const missing = requiredVars.filter(v => !process.env[v]);
+        if (missing.length > 0) {
+            console.log('Environment Debug:', {
+                NODE_ENV: process.env.NODE_ENV,
+                loadedKeys: Object.keys(process.env).filter(k => k.startsWith('FIREBASE_'))
+            });
+            throw new Error(`Missing Firebase environment variables: ${missing.join(', ')}`);
+        }
+
         // Create service account object from environment variables
         const serviceAccount = {
             type: "service_account",
@@ -25,8 +43,8 @@ try {
         console.log('Firebase Admin Initialized');
     }
 } catch (error) {
-    console.error('Firebase Connection Error:', error.message);
-    process.exit(1);
+    console.error('Firebase Initialization Error:', error.message);
+    // Log helpful info but don't crash the whole app if imported elsewhere
 }
 
 const db = admin.firestore();
