@@ -1,11 +1,7 @@
-PORT=5000
-CLIENT_URL=https://mithra-nursery.vercel.app
-JWT_SECRET=your_jwt_secret_key_here
+const admin = require('firebase-admin');
+const bcrypt = require('bcryptjs');
 
-# Firebase Configuration
-FIREBASE_PROJECT_ID=ecomerse-e830d
-FIREBASE_PRIVATE_KEY_ID=bdfad6bee3fa2e3dfd2ce873dd00bc35bd1246b3
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----
+const key = `-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDZwxHa3cIJYyX3
 x4aQ5WRXYOl3Ki8RskHEVyArc33oXvbn0WXqakCRm47AqIH7QUCoPpusPxOIc8To
 xosHj0s/QBgaY9anQGbXnk0TSzfMBHZmruv8L84HjPqj1xR8goIzlfkbtdxHnZKC
@@ -32,6 +28,29 @@ vGSCgMGdKOW6IBckbv5ZVh6jS6JV1Fd72agLQl9BAoGBAMtEFkEMt/P7HdfKqtja
 D204dYS2IW/zx5P4itkoOL4PzHeyAduO80VyACMyiLmCUcvhRUWhmmnWHPyIv4ym
 hWtb1Yvizm4vxRNn6DWfJvamftvnDEb8bxuDXvotlJZwOTMXAARYLMykXObjp2Dd
 dQ6QU+zH89S6E7GjPIEifcWm
------END PRIVATE KEY-----"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@ecomerse-e830d.iam.gserviceaccount.com
-FIREBASE_CLIENT_ID=111572366226284891318
+-----END PRIVATE KEY-----`;
+
+async function run() {
+    try {
+        admin.initializeApp({
+            credential: admin.credential.cert({
+                project_id: 'ecomerse-e830d',
+                private_key: key,
+                client_email: 'firebase-adminsdk-fbsvc@ecomerse-e830d.iam.gserviceaccount.com'
+            })
+        });
+        const db = admin.firestore();
+        const hashedPassword = await bcrypt.hash('NurseryAdmin@2025!', 10);
+        await db.collection('users').doc('admin_id_here').set({
+            name: 'Admin User',
+            email: 'admin@nursery.com',
+            password: hashedPassword,
+            role: 'admin',
+            createdAt: new Date()
+        }, { merge: true });
+        console.log('✅ Success!');
+    } catch (e) {
+        console.error('FAILED:', e.message);
+    }
+}
+run();
