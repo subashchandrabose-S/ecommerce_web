@@ -26,10 +26,12 @@ app.use(cors({
 
         // Check if origin is in our allowed list
         const normalizedOrigin = origin.replace(/\/$/, '');
+        console.log('Origin check:', { origin, normalizedOrigin, allowed: allowedOrigins.includes(normalizedOrigin) });
+
         if (allowedOrigins.includes(normalizedOrigin)) {
             callback(null, true);
         } else {
-            console.log('Blocked by CORS:', origin);
+            console.error('CORS BLOCK:', origin, 'Allowed:', allowedOrigins);
             callback(new Error('Not allowed by CORS'));
         }
     },

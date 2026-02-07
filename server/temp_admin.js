@@ -1,0 +1,39 @@
+const admin = require('firebase-admin');
+const bcrypt = require('bcryptjs');
+
+const key = "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDZwxHa3cIJYyX3\nx4aQ5WRXYOl3Ki8RskHEVyArc33oXvbn0WXqakCRm47AqIH7QUCoPpusPxOIc8To\nxosHj0s/QBgaY9anQGbXnk0TSzfMBHZmruv8L84HjPqj1xR8goIzlfkbtdxHnZKC\n8mgaUxWSGFgcCgvka0VyxzWdxUyAHW+6FBJKafdxMdfJCjZLTUJl4mpPuLXwlLmi\nc7ekgCoUc4qpWoUKni+xXc749ehd3heaDWFFmixXpt+Plj8s/y9hNHCvREB8Hq+D\nkNS/ovY5RRDH0YfM6I+5A/7d1lKdETEiimqdFKjeP2Ey1yhFv8fCbimwASzuTusn\nCQaaDmxXAgMBAAECggEAHB3x2j6z5R5mMp4So/bag+XBf191AGXx0/Yj8zhQU4af\nfsMs052whJx/TCT104lTXeXnl8/1J7M7A4tPPESmRJ5z/kRR3PqVzNVlwk3+AFu7\nJfsEAWXyxkrPugP1YzY+tYZxycArlxujZUEDbBK6QEjgZ45shqvLJczPAXYOMKRf\nTs02DUiB5mjYAlY3BYFTM6esIZFhsR/HdG/nhJDL3xp9Fm5VLL3QzA8Xb6tk6GKC\nuJKBeoQA9sy5syBkJ6qujU0rlt8E1m0rcJjujMUQMw+YSGR40OsPO4Qj/1kE1pmN\nL9Z8li2tkRIBxudYgZcQhHyumslOyLdj+60vaJovAQKBgQD5RCgKs4DT5xSEa0Ir\nY5dOB6shjfuK/dLWTeyRhFEn/A3YKt7sAcgygVvhrBLffbNtwN3sWS/6iys77zFa\nqE/n2a6jdAMLAIDwjSv9uPFG35BbL5fLawGCReTiDHKMGFdDWlI6nHTFVFK3f13a\nYmtiFClHX2SiwHUlxbwgNUvFFwKBgQDfpQpRNcgwGNNA/1M5rz+Vdx4uRzq9W2NM\nyQVdiOjeZmDZ2wOBdxulJ8g4PnYbViuomwJB4t7djOaZKdxK1PNXgOAcITgFVkit\nyS9RcDpWlaxhIQGcRbXq0q3cRhMdmQtgRwyrxvRc1Ip/Ms34Pnbh2ij1NXJw05Ic\ambDfPmawQKBgE9qd5dxOUpKBS9rPNm2ES67Irq+EbZmyBWfHg/+qBylIYQNpJhs\nuOveaveraxfpZJFDMXFruO2KCWw++Op5VXv4zrsk6xNGRc5eK/XaRoTeFY/3ydT1\ncrWerx2V+ajI2ISM8kXaMxnrk68C1VQOp0fIRJ6Itfdkee5e4WEhmdJhAoGBAKy5\nMzGrPtPeqHFfgDBh59KQr8+AFZ6fER8BddJaZbc2DIDUxG1dxw0Tn2/I1cChGZDb\nPrAR/pvPMV2DVe65bsLa9rri8Pg2PmVxpsjXy0aJzBsruamusSQN2FbyC9tlEsMl\nvGSCgMGdKOW6IBckbv5ZVh6jS6JV1Fd72agLQl9BAoGBAMtEFkEMt/P7HdfKqtja\nD204dYS2IW/zx5P4itkoOL4PzHeyAduO80VyACMyiLmCUcvhRUWhmmnWHPyIv4ym\nhWtb1Yvizm4vxRNn6DWfJvamftvnDEb8bxuDXvotlJZwOTMXAARYLMykXObjp2Dd\ndQ6QU+zH89S6E7GjPIEifcWm\n-----END PRIVATE KEY-----\n".replace(/\\n/g, '\n');
+
+const email = 'admin@nursery.com';
+const project_id = 'ecomerse-e830d';
+const client_email = 'firebase-adminsdk-fbsvc@ecomerse-e830d.iam.gserviceaccount.com';
+
+async function run() {
+    try {
+        admin.initializeApp({
+            credential: admin.credential.cert({
+                project_id,
+                private_key: key,
+                client_email
+            })
+        });
+        const db = admin.firestore();
+        const newPassword = 'NurseryAdmin@2025!';
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        console.log('Running update...');
+        const users = db.collection('users');
+        const snap = await users.where('email', '==', email).limit(1).get();
+        if (snap.empty) {
+            await users.add({ name: 'Admin', email, password: hashedPassword, role: 'admin', createdAt: new Date() });
+            console.log('Created Admin');
+        } else {
+            await snap.docs[0].ref.update({ password: hashedPassword, role: 'admin' });
+            console.log('Updated Admin');
+        }
+        process.exit(0);
+    } catch (e) {
+        console.error('ERROR:', e.message);
+        process.exit(1);
+    }
+}
+run();
