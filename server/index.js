@@ -15,8 +15,8 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 // Allowed origins
 const allowedOrigins = [
-    'http://localhost:5173',
-    'https://ecommerce-web-emb1.vercel.app',
+    'https://mithranursery.vercel.app/',
+    'https://mithra-nursery.vercel.app/',
     process.env.CLIENT_URL
 ].filter(Boolean);
 
