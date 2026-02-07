@@ -15,18 +15,22 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 // Allowed origins
 const allowedOrigins = [
-    'https://mithranursery.vercel.app/',
-    'https://mithra-nursery.vercel.app/',
+    'https://mithranursery.vercel.app',
+    'https://mithra-nursery.vercel.app',
+    'http://localhost:5173',
     process.env.CLIENT_URL
-].filter(Boolean);
+].map(url => url?.replace(/\/$/, '')).filter(Boolean);
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1) {
+
+        // Check if origin is in our allowed list
+        const normalizedOrigin = origin.replace(/\/$/, '');
+        if (allowedOrigins.includes(normalizedOrigin)) {
             callback(null, true);
         } else {
+            console.log('Blocked by CORS:', origin);
             callback(new Error('Not allowed by CORS'));
         }
     },
