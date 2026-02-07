@@ -17,7 +17,6 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
     'https://mithranursery.vercel.app',
     'https://mithra-nursery.vercel.app',
-    'http://localhost:5173',
     process.env.CLIENT_URL
 ].map(url => url?.replace(/\/$/, '')).filter(Boolean);
 
