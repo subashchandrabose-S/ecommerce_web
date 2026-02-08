@@ -5,3 +5,10 @@ build/
 .DS_Store
 *.log
 serviceAccountKey.json
+.env.key
+dummy.txt
+server/.env
+server/run_log.txt
+server/admin_*.log
+server/debug_*.log
+server/debug.log

@@ -1,12 +1,15 @@
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
 const admin = require('firebase-admin');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 async function run() {
     try {
-        const rawKey = process.env.FIREBASE_PRIVATE_KEY;
-        const key = rawKey.includes('\n') ? rawKey : rawKey.replace(/\\n/g, '\n');
+        // Read key from file to avoid any parsing weirdness
+        const key = fs.readFileSync(path.join(__dirname, '.env.key'), 'utf8').trim();
+
+        console.log('Key length:', key.length);
 
         admin.initializeApp({
             credential: admin.credential.cert({
@@ -44,12 +47,6 @@ async function run() {
             });
             console.log('✅ Admin User Updated Successfully!');
         }
-
-        console.log('');
-        console.log('Login with:');
-        console.log('Email:', email);
-        console.log('Password:', newPassword);
-
         process.exit(0);
     } catch (e) {
         console.error('❌ Error:', e.message);
