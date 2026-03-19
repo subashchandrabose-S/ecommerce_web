@@ -54,7 +54,12 @@ app.get('/', (req, res) => {
         status: 'online',
         message: 'Mithra Nursery API is running...',
         timestamp: new Date().toISOString(),
-        env: process.env.NODE_ENV || 'development'
+        env: process.env.NODE_ENV || 'development',
+        config: {
+            mongo_uri: process.env.MONGO_URI ? 'PRESENT' : 'MISSING',
+            jwt_secret: process.env.JWT_SECRET ? 'PRESENT' : 'MISSING',
+            client_url: process.env.CLIENT_URL ? 'PRESENT' : 'MISSING'
+        }
     });
 });
 
