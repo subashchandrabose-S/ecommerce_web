@@ -17,6 +17,8 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
     'https://mithranursery.vercel.app',
     'https://mithra-nursery.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
     process.env.CLIENT_URL
 ].map(url => url?.replace(/\/$/, '')).filter(Boolean);
 
@@ -49,11 +51,9 @@ app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
-    const admin = require('firebase-admin');
     res.json({
         status: 'online',
         message: 'Mithra Nursery API is running...',
-        firebase_configured: admin.apps.length > 0,
         timestamp: new Date().toISOString(),
         env: process.env.NODE_ENV || 'development'
     });

@@ -1,11 +1,9 @@
-const { db, connectDB } = require('./config/db');
-const dotenv = require('dotenv');
+const { connectDB } = require('./config/db');
+const mongoose = require('mongoose');
 const Product = require('./models/Product');
+const dotenv = require('dotenv');
 
 dotenv.config();
-
-// Initialize Firebase
-connectDB();
 
 const products = [
     // Indoor Plants
@@ -186,28 +184,19 @@ const products = [
 
 const seedDB = async () => {
     try {
+        await connectDB();
+
         console.log('Clearing existing products...');
-        const snapshot = await db.collection('products').get();
-        if (!snapshot.empty) {
-            const batch = db.batch();
-            snapshot.docs.forEach((doc) => {
-                batch.delete(doc.ref);
-            });
-            await batch.commit();
-        }
+        await Product.deleteMany({});
 
         console.log('Seeding products...');
-        for (const p of products) {
-            await new Product(p).save();
-        }
+        await Product.insertMany(products);
 
         console.log('✅ Database Seeded with categorized plants!');
         console.log(`📦 Total products: ${products.length}`);
-        console.log('🌿 Indoor plants: 5');
-        console.log('🌻 Outdoor plants: 5');
-        console.log('💊 Medicine plants: 4');
-        console.log('🧪 Chemical products: 3');
         console.log('💰 All prices in Indian Rupees (₹)');
+        
+        mongoose.connection.close();
         process.exit(0);
     } catch (error) {
         console.error('Error seeding database:', error);

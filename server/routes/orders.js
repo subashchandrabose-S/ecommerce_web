@@ -18,15 +18,14 @@ router.post('/', auth, async (req, res) => {
             totalAmount,
             fullName,
             phoneNumber,
-            shippingAddress,
-            status: 'pending' // Default status
+            shippingAddress
         });
 
         await order.save();
-        res.json(order);
+        res.status(201).json(order);
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+        console.error('Order Creation Error:', err.message);
+        res.status(500).json({ message: 'Server Error', error: err.message });
     }
 });
 
@@ -41,8 +40,6 @@ router.get('/mine', auth, async (req, res) => {
     }
 });
 
-
-
 // Get single order by ID
 router.get('/:id', auth, async (req, res) => {
     try {
@@ -52,8 +49,8 @@ router.get('/:id', auth, async (req, res) => {
             return res.status(404).json({ message: 'Order not found' });
         }
 
-        // Check if user owns the order
-        if (order.user.toString() !== req.user.id) {
+        // Check if user owns the order (allow admin to view any order)
+        if (order.user.toString() !== req.user.id && req.user.role !== 'admin') {
             return res.status(401).json({ message: 'Not authorized' });
         }
 
@@ -67,7 +64,7 @@ router.get('/:id', auth, async (req, res) => {
     }
 });
 
-// Update order status to paid
+// Update order status to completed/paid
 router.put('/:id/pay', auth, async (req, res) => {
     try {
         const order = await Order.findById(req.params.id);

@@ -14,5 +14,8 @@
     "plants"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^7.1.0"
+  }
 }
