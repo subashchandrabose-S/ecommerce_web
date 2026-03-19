@@ -63,6 +63,15 @@ app.get('/', (req, res) => {
     });
 });
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error('SERVER ERROR:', err.stack);
+    res.status(500).json({
+        message: 'Internal Server Error',
+        error: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong on the server'
+    });
+});
+
 // Export for Vercel
 module.exports = app;
 
