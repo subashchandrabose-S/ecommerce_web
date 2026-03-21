@@ -55,6 +55,7 @@ app.get('/', (req, res) => {
         message: 'Mithra Nursery API is running...',
         timestamp: new Date().toISOString(),
         env: process.env.NODE_ENV || 'development',
+        database: mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED',
         config: {
             mongo_uri: process.env.MONGO_URI ? 'PRESENT' : 'MISSING',
             jwt_secret: process.env.JWT_SECRET ? 'PRESENT' : 'MISSING',
